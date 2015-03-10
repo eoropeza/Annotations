@@ -106,6 +106,29 @@ class Annotations
 
         return self::$annotationCache[$className . '::' . $methodName];
     }
+    
+    /**
+     * Gets all anotations with pattern @SomeAnnotation() from a determinated property of a given class
+     *
+     * @param  string $className             class name
+     * @param  string $propertyName            property name to get annotations
+     * @return array  self::$annotationCache all annotated elements of a property given
+     */
+    public static function getPropertyAnnotations($className, $propertyName)
+    {
+        if (!isset(self::$annotationCache[$className . '::' . $propertyName])) {
+            try {
+                $property = new \ReflectionProperty($className, $propertyName);
+                $annotations = self::parseAnnotations($property->getDocComment());
+            } catch (\ReflectionException $e) {
+                $annotations = array();
+            }
+
+            self::$annotationCache[$className . '::' . $propertyName] = $annotations;
+        }
+
+        return self::$annotationCache[$className . '::' . $propertyName];
+    }
 
     /**
      * Gets all anotations with pattern @SomeAnnotation() from a determinated method of a given class
